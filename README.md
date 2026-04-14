@@ -6,9 +6,13 @@ An integrated Enterprise Resource Planning (ERP) application designed to streaml
 The ERP system supports key business functions such as:
 
 Human Resource Management (HRIS) – employee data, attendance, payroll, and organizational hierarchy
+
 Finance & Accounting – transaction tracking, revenue management, financial reporting
+
 Inventory Management – stock tracking, asset management, and movement monitoring
-Operations (Gadai / Fidusia) – transaction lifecycle management, collateral tracking, and loan processing
+
+Operations – transaction lifecycle management, product tracking, and payment processing
+
 Reporting & Analytics – real-time dashboards and performance insights
 
 Built with a modern tech stack, the application emphasizes:
