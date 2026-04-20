@@ -26,23 +26,30 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_HOST: db
-      DATABASE_PORT: 5432
-      DATABASE_USER: postgres
-      DATABASE_PASSWORD: secret
-      DATABASE_NAME: app_db
+      DATABASE_URL: postgresql+psycopg2://postgres:secret@db:5432/app_db
+      PYTHONPATH: /app
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      - ./erp-backend:/app
+    working_dir: /app
+    command: >
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     networks:
       - app-network
 
   frontend:
-    build: ./erp-frontend
+    build:
+      context: ./erp-frontend
+      dockerfile: Dockerfile.dev
     container_name: erp_frontend
-    restart: always
     ports:
-      - "8080:80"
+      - "8080:5173"
+    volumes:
+      - ./erp-frontend:/app
+      - /app/node_modules
+    command: npm run dev -- --host
     depends_on:
       - backend
     networks:
