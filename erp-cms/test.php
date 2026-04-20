@@ -4,7 +4,6 @@ $port = "6543";
 $db   = "postgres";
 $user = "postgres.drtfczavpkbatbaqxdtr";
 $pass = "Violla09112020!";
-
 $dsn = "pgsql:host=$host;port=$port;dbname=$db;sslmode=require";
 
 $options = [
