@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from alembic import context
 
 from app.db.base import Base
-import app.models  # IMPORTANT
+from app.modules.hris.registry import HRIS_MODELS
 
 config = context.config
 
@@ -21,12 +21,21 @@ def run_migrations_online():
         "postgresql+psycopg2://postgres:secret@db:5432/app_db"
     )
 
-    connectable = create_engine(url)
+    connectable = create_engine(
+        url,
+        pool_pre_ping=True
+    )
 
     with connectable.connect() as connection:
+        for model in HRIS_MODELS:
+            pass
+
         context.configure(
             connection=connection,
-            target_metadata=target_metadata
+            target_metadata=target_metadata,
+            compare_type=True,
+            compare_server_default=True,
+            compare_nullable=True,
         )
 
         with context.begin_transaction():

@@ -1,7 +1,7 @@
 from app.db.base import Base
 from app.db.session import engine
 
-import app.models  # ensure models are loaded
+from app.modules.hris.registry import HRIS_MODELS
 
 
 def init_db():

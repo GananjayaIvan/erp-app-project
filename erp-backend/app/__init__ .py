@@ -1,1 +1,1 @@
-from app.models.employee import Employee
+from app.modules.hris.models import Attendance,Employee,EmployeeAuth,EmploymentModel,LeaveBalance,LeaveRequest,LeaveType,Office,OfficePolicy,Position,Province,Salary,Shift
