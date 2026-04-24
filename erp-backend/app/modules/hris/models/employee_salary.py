@@ -1,10 +1,64 @@
 from .library.dependencies import *
 
-class Salary(Base):
-    __tablename__ = "salary"
 
+class Salary(Base):
+    __tablename__ = "salaries"
+
+    
+    # IDENTITY
+    
     id = Column(Integer, primary_key=True, index=True)
-    employee_id = Column(Integer, ForeignKey("employee.id"), nullable=False)
+
+    
+    # ORG CONTEXT
+    
+    organization_id = Column(
+        Integer,
+        ForeignKey("organizations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    
+    # CORE RELATION (IMPORTANT)
+    
+    employment_id = Column(
+        Integer,
+        ForeignKey("employments.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    
+    # PAYROLL DATA
+    
     amount = Column(Integer, nullable=False)
+
+    currency = Column(String, default="IDR")
+
+    # Optional: salary type
+    bonus = Column(Integer, nullable=True)
+    allowance = Column(Integer, nullable=True)
+
+    
+    # TIMELINE (VERY IMPORTANT)
+    
+    effective_from = Column(DateTime, nullable=False)
+    effective_to = Column(DateTime, nullable=True)
+
+    
+    # AUDIT
+    
     created_at = Column(DateTime, server_default=func.now())
-    employee = relationship("Employee")
+
+    updated_at = Column(
+        DateTime,
+        server_default=func.now(),
+        onupdate=func.now()
+    )
+
+    
+    # RELATIONSHIPS
+    
+    employment = relationship("EmploymentModel")
+    organization = relationship("Organization")

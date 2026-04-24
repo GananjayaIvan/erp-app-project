@@ -1,19 +1,16 @@
 from .library.dependencies import *
+from app.modules.hris.enums.employment_status import EmploymentStatus
 
 
-class EmployeeStatus(PyEnum):
-    active = "active"
-    inactive = "inactive"
-    terminated = "terminated"
-    suspended = "suspended"
+class Employees(Base):
+    __tablename__ = "employees"
 
-class Employee(Base):
-    __tablename__ = "employee"
-
-
-    # Identity
-
+    # =========================
+    # IDENTITY
+    # =========================
     id = Column(Integer, primary_key=True, index=True)
+
+    user_id = ForeignKey("users.id", nullable=True)
 
     full_name = Column(String, nullable=False)
 
@@ -25,58 +22,70 @@ class Employee(Base):
 
     gender = Column(String, nullable=True)
 
-
-    # Lifecycle
-
     status = Column(
-        SQLEnum(EmployeeStatus, name="employee_status"),
-        default=EmployeeStatus.active,
-        nullable=False
+        SQLEnum(EmploymentStatus, name="employee_status"),
+        default=EmploymentStatus.active,
+        nullable=False,
+        index=True
     )
 
     joined_at = Column(DateTime, nullable=True)
     terminated_at = Column(DateTime, nullable=True)
 
-
-    # System
-
     created_at = Column(DateTime, server_default=func.now())
 
-
-    # Org hierarchy
-
-    manager_id = Column(
-        Integer,
-        ForeignKey("employee.id", ondelete="SET NULL"),
-        nullable=True,
-        index=True
+    # =========================
+    # AUTH
+    # =========================
+    users = relationship(
+        "users",
+        back_populates="employees",
+        uselist=False,
+        cascade="all, delete-orphan"
     )
 
-    manager = relationship(
-        "Employee",
-        remote_side=[id],
-        backref="subordinates"
-    )
-
-
-    # Auth
-
-    auth = relationship(
-        "EmployeeAuth",
-        back_populates="employee",
-        uselist=False
-    )
-
-
-    # HR relations
-
-    employments = relationship(
-        "Employment",
+    # =========================
+    # ORGANIZATION ACCESS (M2M)
+    # =========================
+    organizations = relationship(
+        "EmployeeOrganization",
         back_populates="employee",
         cascade="all, delete-orphan"
     )
 
+    # =========================
+    # EMPLOYMENT (ORG CONTEXT LAYER)
+    # =========================
+    employments = relationship(
+        "EmploymentModel",
+        back_populates="employee",
+        cascade="all, delete-orphan"
+    )
+
+    # =========================
+    # OPTIONAL LEGACY RELATIONS
+    # =========================
     attendances = relationship(
         "Attendance",
         back_populates="employee"
     )
+
+    salaries = relationship(
+        "Salary",
+        back_populates="employee"
+    )
+
+    # =========================
+    # HELPERS
+    # =========================
+    def is_active(self) -> bool:
+        return self.status == EmploymentStatus.active
+
+    def is_inactive(self) -> bool:
+        return self.status == EmploymentStatus.inactive
+
+    def is_terminated(self) -> bool:
+        return self.status == EmploymentStatus.terminated
+
+    def is_suspended(self) -> bool:
+        return self.status == EmploymentStatus.suspended

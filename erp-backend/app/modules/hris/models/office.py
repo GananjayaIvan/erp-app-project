@@ -1,101 +1,128 @@
 from .library.dependencies import *
-class Office(Base):
-    __tablename__ = "office"
+from enum import Enum
+
+
+class OfficeTypeEnum(str, Enum):
+    hq = "hq"
+    branch = "branch"
+    remote = "remote"
+    warehouse = "warehouse"
+
+
+class Offices(Base):
+    __tablename__ = "offices"
 
     
-    # Identity
+    # IDENTITY
     
     id = Column(Integer, primary_key=True, index=True)
+
     code = Column(String(50), unique=True, index=True, nullable=False)
+
     name = Column(String(255), nullable=False)
 
     
-    # Location
+    # ORG CONTEXT (SAAS FIX)
+    
+    organization_id = Column(
+        Integer,
+        ForeignKey("organizations.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True
+    )
+
+    
+    # LOCATION
     
     address = Column(String(255), nullable=True)
+
     city = Column(String(100), nullable=True)
+
     state = Column(String(100), nullable=True)
+
     country = Column(String(100), nullable=True)
+
     postal_code = Column(String(20), nullable=True)
+
     latitude = Column(Float, nullable=True)
+
     longitude = Column(Float, nullable=True)
-    # Hierarchy (Adjacency List)
+
+    timezone = Column(String(50), default="Asia/Jakarta")
+
     
-    parent_id = Column(Integer, ForeignKey("office.id"), nullable=True)
+    # HIERARCHY
+    
+    parent_id = Column(
+        Integer,
+        ForeignKey("offices.id"),
+        nullable=True,
+        index=True
+    )
 
     parent = relationship(
-        "Office",
+        "Offices",
         remote_side=[id],
         backref="children",
         foreign_keys=[parent_id],
     )
 
-    office_type = Column(String(50))  # or Enum
-    timezone = Column(String(50), default="Asia/Jakarta")
     
-    # Status
+    # TYPE / STATUS
     
-    is_active = Column(Boolean, default=True)
+    offices_type = Column(
+        SQLEnum(OfficeTypeEnum, name="office_type_enum"),
+        nullable=True,
+        index=True
+    )
+
+    is_active = Column(Boolean, default=True, index=True)
 
     
-    # Audit
+    # AUDIT
     
     created_at = Column(DateTime, server_default=func.now())
+
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
     
-    # Relationships
+    # RELATIONSHIPS
     
-    employees = relationship("Employee", back_populates="office")
+    employees = relationship("Employees", back_populates="offices")
 
     
-    # DERIVED FIELD: LEVEL (NOT STORED)
+    # DERIVED FIELD (SAFE VERSION)
     
-    @property
-    def level(self) -> int:
+    def get_level(self) -> int:
         """
-        Compute hierarchy depth dynamically.
-        Root = 1, child = parent + 1, etc.
+        Safe non-recursive level calculation.
         """
-        if not self.parent:
-            return 1
-        return self.parent.level + 1
+        level = 1
+        current = self.parent
+
+        while current:
+            level += 1
+            current = current.parent
+
+        return level
 
     
     # VALIDATION
     
     def validate_hierarchy(self):
-        """
-        Call this in service layer before insert/update.
-        Ensures tree integrity.
-        """
-
-        # 1. Cannot be its own parent
         if self.parent_id is not None and self.parent_id == self.id:
             raise ValueError("Office cannot be its own parent")
 
-        # 2. Ensure no circular reference
         if self._creates_cycle():
             raise ValueError("Circular hierarchy detected")
-
-        # 3. Root validation
-        if self.parent is None:
-            # Root must conceptually be level 1 (derived check)
-            return
-
-        # 4. Optional rule: enforce strict depth difference
-        # (parent-child consistency is naturally ensured by derived level)
 
     
     # CYCLE DETECTION
     
     def _creates_cycle(self) -> bool:
-        """
-        Walk up the parent chain to ensure no loops exist.
-        """
         current = self.parent
 
-        while current is not None:
+        while current:
             if current.id == self.id:
                 return True
             current = current.parent
@@ -103,25 +130,19 @@ class Office(Base):
         return False
 
     
-    # UTILITY HELPERS
+    # SAFE TREE OPERATIONS
     
     def get_root(self):
-        """
-        Returns the top-most ancestor office.
-        """
         current = self
-        while current.parent is not None:
+        while current.parent:
             current = current.parent
         return current
 
     def get_ancestors(self):
-        """
-        Returns list of all parents up to root.
-        """
         ancestors = []
         current = self.parent
 
-        while current is not None:
+        while current:
             ancestors.append(current)
             current = current.parent
 
@@ -129,14 +150,14 @@ class Office(Base):
 
     def get_descendants(self):
         """
-        DFS traversal for all children.
+        Iterative DFS (safer than recursion).
         """
         result = []
+        stack = list(self.children)
 
-        def dfs(node):
-            for child in node.children:
-                result.append(child)
-                dfs(child)
+        while stack:
+            node = stack.pop()
+            result.append(node)
+            stack.extend(node.children)
 
-        dfs(self)
         return result

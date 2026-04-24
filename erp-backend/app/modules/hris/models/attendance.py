@@ -4,19 +4,22 @@ from .library.dependencies import *
 class Attendance(Base):
     __tablename__ = "attendance"
 
-
-    # Identity
-
     id = Column(Integer, primary_key=True, index=True)
 
-    employee_id = Column(
+    organization_id = Column(
         Integer,
-        ForeignKey("employee.id"),
+        ForeignKey("organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
 
-    # Link to shift
+    employees_id = Column(
+        Integer,
+        ForeignKey("employees.id"),
+        nullable=False,
+        index=True
+    )
+
     shift_id = Column(
         Integer,
         ForeignKey("shift.id"),
@@ -24,33 +27,17 @@ class Attendance(Base):
         index=True
     )
 
-
     # Time tracking
-
     checkin = Column(DateTime(timezone=True), server_default=func.now())
     checkout = Column(DateTime(timezone=True), nullable=True)
-
-    # Computed/Stored duration (optional but useful)
     worked_minutes = Column(Integer, nullable=True)
 
-
-    # Status
-
-    status = Column(
-        String(20),
-        default="present"
-    )
-    # present | late | absent | half_day | overtime
-
+    status = Column(String(20), default="present")
 
     # Relationships
-
-    employee = relationship("Employee", back_populates="attendances")
-
+    employees = relationship("Employees", back_populates="attendances")
     shift = relationship("Shift", backref="attendances")
-
-
-    # Audit
+    organization = relationship("Organization")
 
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(
@@ -58,7 +45,6 @@ class Attendance(Base):
         server_default=func.now(),
         onupdate=func.now()
     )
-
 
     # BUSINESS LOGIC
 
