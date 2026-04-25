@@ -1,7 +1,7 @@
 from .library.dependencies import *
 from app.modules.hris.enums.leave_request_status import *
 
-class LeaveRequest(Base):
+class LeaveRequests(Base):
     __tablename__ = "leave_requests"
 
     # =========================
@@ -24,14 +24,14 @@ class LeaveRequest(Base):
     # =========================
     employment_id = Column(
         Integer,
-        ForeignKey("employments.id", ondelete="CASCADE"),
+        ForeignKey("employment_models.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
 
-    leave_type_id = Column(
+    leave_types_id = Column(
         Integer,
-        ForeignKey("leave_type.id", ondelete="CASCADE"),
+        ForeignKey("leave_types.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
@@ -65,7 +65,7 @@ class LeaveRequest(Base):
     # =========================
     approved_by_employment_id = Column(
         Integer,
-        ForeignKey("employments.id"),
+        ForeignKey("employment_models.id"),
         nullable=True,
         index=True
     )
@@ -90,12 +90,12 @@ class LeaveRequest(Base):
     # RELATIONSHIPS
     # =========================
     employment = relationship(
-        "EmploymentModel",
+        "EmploymentModels",
         foreign_keys=[employment_id],
         backref="leave_requests"
     )
 
-    leave_type = relationship(
+    leave_types = relationship(
         "LeaveType",
         backref="leave_requests"
     )
@@ -106,7 +106,7 @@ class LeaveRequest(Base):
     )
 
     approver = relationship(
-        "EmploymentModel",
+        "EmploymentModels",
         foreign_keys=[approved_by_employment_id],
         backref="approved_leave_requests"
     )

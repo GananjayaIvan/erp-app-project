@@ -1,6 +1,6 @@
 from .library.dependencies import *
 
-class EmployeeOrganization(Base):
+class EmployeeOrganizations(Base):
     __tablename__ = "employee_organizations"
 
     id = Column(Integer, primary_key=True)

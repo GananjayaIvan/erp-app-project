@@ -1,5 +1,5 @@
 from .library.dependencies import *
-
+from app.modules.hris.enums.attendance import *
 
 class Attendance(Base):
     __tablename__ = "attendance"

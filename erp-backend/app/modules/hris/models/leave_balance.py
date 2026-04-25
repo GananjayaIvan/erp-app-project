@@ -24,14 +24,14 @@ class LeaveBalance(Base):
     # =========================
     employment_id = Column(
         Integer,
-        ForeignKey("employments.id", ondelete="CASCADE"),
+        ForeignKey("employment_models.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
 
-    leave_type_id = Column(
+    leave_types_id = Column(
         Integer,
-        ForeignKey("leave_type.id", ondelete="CASCADE"),
+        ForeignKey("leave_types.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
@@ -64,7 +64,7 @@ class LeaveBalance(Base):
     # RELATIONSHIPS
     # =========================
     employment = relationship("EmploymentModel")
-    leave_type = relationship("LeaveType")
+    leave_types = relationship("LeaveType")
     organization = relationship("Organization")
 
     # =========================

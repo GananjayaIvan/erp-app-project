@@ -2,7 +2,7 @@ from .library.dependencies import *
 from app.modules.hris.enums.employment_status import EmploymentStatus
 
 
-class Membership(Base):
+class Memberships(Base):
     __tablename__ = "memberships"
 
     id = Column(Integer, primary_key=True)

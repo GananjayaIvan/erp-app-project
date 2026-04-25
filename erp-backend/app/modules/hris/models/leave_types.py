@@ -1,8 +1,8 @@
 from .library.dependencies import *
 
 
-class LeaveType(Base):
-    __tablename__ = "leave_type"
+class LeaveTypes(Base):
+    __tablename__ = "leave_types"
 
     
     # IDENTITY
@@ -68,6 +68,6 @@ class LeaveType(Base):
 
     leave_requests = relationship(
         "LeaveRequest",
-        back_populates="leave_type",
+        back_populates="leave_types",
         cascade="all"
     )

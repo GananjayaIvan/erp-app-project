@@ -1,5 +1,9 @@
 from enum import Enum
 
+class MaritalStatus(str,Enum):
+    single = "single"
+    married = "married"
+    separated = "separated"
 
 class EmploymentStatus(str, Enum):
     active = "active"

@@ -1,8 +1,8 @@
 from .library.dependencies import *
 from app.modules.hris.enums.employment_status import *
 
-class EmploymentModel(Base):
-    __tablename__ = "employments"
+class EmploymentModels(Base):
+    __tablename__ = "employment_models"
 
     __table_args__ = (
         UniqueConstraint(
@@ -12,14 +12,13 @@ class EmploymentModel(Base):
         ),
     )
 
-    # =========================
     # IDENTITY
-    # =========================
+    
     id = Column(Integer, primary_key=True, index=True)
 
-    # =========================
+    
     # ORG CONTEXT
-    # =========================
+    
     organization_id = Column(
         Integer,
         ForeignKey("organizations.id", ondelete="CASCADE"),
@@ -27,9 +26,9 @@ class EmploymentModel(Base):
         index=True,
     )
 
-    # =========================
+    
     # CORE RELATIONS
-    # =========================
+    
     employees_id = Column(
         Integer,
         ForeignKey("employees.id", ondelete="CASCADE"),
@@ -51,25 +50,25 @@ class EmploymentModel(Base):
 
     manager_employment_id = Column(
         Integer,
-        ForeignKey("employments.id", ondelete="SET NULL"),
+        ForeignKey("employment_models.id", ondelete="SET NULL"),
         nullable=True,
         index=True
     )
 
-    # =========================
+    
     # RELATIONSHIPS
-    # =========================
+    
     employee = relationship(
         "Employees",
-        back_populates="employments",
+        back_populates="employment_models",
         foreign_keys=[employees_id],
     )
 
     organization = relationship("Organization")
 
-    position = relationship("Position", backref="employments")
+    position = relationship("Position", backref="employment_models")
 
-    offices = relationship("Offices", backref="employments")
+    offices = relationship("Offices", backref="employment_models")
 
     manager = relationship(
         "EmploymentModel",
@@ -83,16 +82,16 @@ class EmploymentModel(Base):
         back_populates="manager"
     )
 
-    # =========================
+    
     # TIMELINE
-    # =========================
+    
     start_date = Column(DateTime, nullable=False)
 
     end_date = Column(DateTime, nullable=True)
 
-    # =========================
+    
     # CLASSIFICATION
-    # =========================
+    
     status = Column(
         SQLEnum(EmploymentStatus, name="employment_status"),
         default=EmploymentStatus.active,
@@ -105,16 +104,16 @@ class EmploymentModel(Base):
         nullable=True,
     )
 
-    # =========================
+    
     # SNAPSHOT (HISTORY SAFETY)
-    # =========================
+    
     position_snapshot = Column(String, nullable=True)
 
     offices_snapshot = Column(String, nullable=True)
 
-    # =========================
+    
     # AUDIT
-    # =========================
+    
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
     updated_at = Column(
@@ -124,9 +123,9 @@ class EmploymentModel(Base):
         nullable=False
     )
 
-    # =========================
+    
     # BUSINESS HELPERS
-    # =========================
+    
 
     def is_active(self) -> bool:
         return self.status == EmploymentStatus.active

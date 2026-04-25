@@ -1,7 +1,7 @@
 from .library.dependencies import *
 
 
-class Salary(Base):
+class Salaries(Base):
     __tablename__ = "salaries"
 
     
@@ -24,7 +24,7 @@ class Salary(Base):
     
     employment_id = Column(
         Integer,
-        ForeignKey("employments.id", ondelete="CASCADE"),
+        ForeignKey("employment_models.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
