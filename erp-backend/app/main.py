@@ -1,27 +1,24 @@
 from fastapi import FastAPI
-from app.api.routes import router as api_router
+from fastapi.openapi.docs import get_redoc_html
+
+from app.api.routes import router
 
 app = FastAPI(
-    title="ERP System",
-    version="1.0.0",
-    docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url=None
 )
 
-# Include API routes
-app.include_router(api_router)
+app.include_router(router)
 
 
-@app.get("/")
-def root():
-    return {
-        "message": "ERP API is running",
-        "docs": "/docs"
-    }
+@app.get("/openapi.json", include_in_schema=False)
+def openapi():
+    return app.openapi()
 
 
-@app.get("/health")
-def health():
-    return {
-        "status": "ok"
-    }
+@app.get("/redoc", include_in_schema=False)
+def redoc():
+    return get_redoc_html(
+        openapi_url="/openapi.json",
+        title="API Docs",
+        redoc_js_url="https://cdn.jsdelivr.net/npm/redoc@2/bundles/redoc.standalone.js"
+    )

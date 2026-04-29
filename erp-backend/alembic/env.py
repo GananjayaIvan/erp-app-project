@@ -5,7 +5,9 @@ from sqlalchemy import create_engine
 from alembic import context
 
 from app.db.base import Base
-from app.modules.hris.registry import HRIS_MODELS
+
+# IMPORTANT: force model loading
+import app.db.hris.registry
 
 config = context.config
 
@@ -27,8 +29,6 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        for model in HRIS_MODELS:
-            pass
 
         context.configure(
             connection=connection,

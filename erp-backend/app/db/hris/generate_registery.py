@@ -1,0 +1,82 @@
+import os
+import ast
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+MODELS_PATH = os.path.join(BASE_DIR, "models")
+
+OUTPUT_FILE = os.path.join(BASE_DIR, "registry.py")
+
+
+def is_sqlalchemy_model(class_node):
+    """
+    Detect if class inherits from Base
+    """
+    for base in class_node.bases:
+        if isinstance(base, ast.Name) and base.id == "Base":
+            return True
+        if isinstance(base, ast.Attribute) and base.attr == "Base":
+            return True
+    return False
+
+
+def extract_model_classes(file_path):
+    """
+    Extract SQLAlchemy model class names from a file
+    """
+    with open(file_path, "r", encoding="utf-8") as f:
+        tree = ast.parse(f.read(), filename=file_path)
+
+    models = []
+
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef):
+            if is_sqlalchemy_model(node):
+                models.append(node.name)
+
+    return models
+
+
+def generate_registry():
+    model_files = sorted([
+        f for f in os.listdir(MODELS_PATH)
+        if f.endswith(".py") and f != "__init__.py"
+    ])
+
+    imports = []
+    all_models = set()  # prevent duplicates
+
+    for file in model_files:
+        module_name = file.replace(".py", "")
+        file_path = os.path.join(MODELS_PATH, file)
+
+        try:
+            classes = extract_model_classes(file_path)
+
+            if classes:
+                imports.append(
+                    f"from app.db.hris.models.{module_name} import {', '.join(classes)}"
+                )
+
+                for cls in classes:
+                    all_models.add(cls)
+
+        except Exception as e:
+            print(f"Skipping {file}: {e}")
+
+    registry_content = "\n".join(imports)
+    registry_content += "\n\nHRIS_MODELS = [\n"
+
+    for model in sorted(all_models):
+        registry_content += f"    {model},\n"
+
+    registry_content += "]\n"
+
+    with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
+        f.write(registry_content)
+
+    print(f"Registry generated with {len(all_models)} models.")
+
+
+if __name__ == "__main__":
+    generate_registry()
