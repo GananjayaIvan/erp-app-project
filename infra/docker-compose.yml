@@ -1,0 +1,17 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+
+    ports:
+      - "80:80"
+
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    external: true
