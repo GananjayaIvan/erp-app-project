@@ -2,8 +2,10 @@ from .library.dependencies import *
 class EmployeeSensitive(Base):
     __tablename__ = "employee_sensitive"
 
+    __table_args__ = {"schema": "hris"}
+
     id = Column(Integer, primary_key=True, index=True)
-    employee_id = Column(Integer, ForeignKey("employees.id"), unique=True)
+    employee_id = Column(Integer, ForeignKey("hris.employees.id"), unique=True)
 
     marital_status = Column(String)
     number_of_children = Column(Integer)
@@ -29,7 +31,7 @@ class EmployeeSensitive(Base):
     __tablename__ = "employee_sensitive"
 
     id = Column(Integer, primary_key=True, index=True)
-    employee_id = Column(Integer, ForeignKey("employees.id"), unique=True)
+    employee_id = Column(Integer, ForeignKey("hris.employees.id"), unique=True)
 
     marital_status = Column(String, index=True)
 

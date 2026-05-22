@@ -12,6 +12,7 @@ class ShiftTypeEnum(str, Enum):
 class OfficePolicy(Base):
     __tablename__ = "offices_policy"
 
+    __table_args__ = {"schema": "hris"}
     
     # IDENTITY
     
@@ -22,7 +23,7 @@ class OfficePolicy(Base):
     
     organization_id = Column(
         Integer,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+        ForeignKey("hris.organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
@@ -32,7 +33,7 @@ class OfficePolicy(Base):
     
     offices_id = Column(
         Integer,
-        ForeignKey("offices.id", ondelete="CASCADE"),
+        ForeignKey("hris.offices.id", ondelete="CASCADE"),
         unique=True,
         nullable=False,
         index=True

@@ -1,0 +1,24 @@
+apiVersion: api.cerbos.dev/v1
+resourcePolicy:
+  version: "default"
+
+  resource: "erp_record"
+
+  rules:
+    - actions: ["view"]
+      effect: EFFECT_ALLOW
+      roles:
+        - admin
+        - manager
+        - employee
+
+    - actions: ["edit"]
+      effect: EFFECT_ALLOW
+      roles:
+        - admin
+        - manager
+
+    - actions: ["delete"]
+      effect: EFFECT_ALLOW
+      roles:
+        - admin

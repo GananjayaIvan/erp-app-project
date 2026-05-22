@@ -12,6 +12,8 @@ class OfficeTypeEnum(str, Enum):
 class Offices(Base):
     __tablename__ = "offices"
 
+    __table_args__ = {"schema": "hris"}
+
     
     # IDENTITY
     
@@ -26,7 +28,7 @@ class Offices(Base):
     
     organization_id = Column(
         Integer,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+        ForeignKey("hris.organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
@@ -55,7 +57,7 @@ class Offices(Base):
     
     parent_id = Column(
         Integer,
-        ForeignKey("offices.id"),
+        ForeignKey("hris.offices.id"),
         nullable=True,
         index=True
     )

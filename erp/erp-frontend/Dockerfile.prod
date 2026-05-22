@@ -1,13 +1,17 @@
-# build stage
-FROM node:20-alpine AS build
+FROM node:20-alpine
 
 WORKDIR /app
+
 COPY package*.json ./
+
 RUN npm install
 
-COPY . .
-RUN npm run build
+RUN npm install -D tailwindcss@3.4.17 postcss autoprefixer
 
-# production stage
-FROM nginx:alpine
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY . .
+
+RUN ./scripts/shadcn.sh
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

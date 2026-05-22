@@ -10,54 +10,52 @@ class EmploymentModels(Base):
             "organization_id",
             name="uq_employee_org_employment"
         ),
+        {"schema": "hris"}
     )
 
     # IDENTITY
-    
+
     id = Column(Integer, primary_key=True, index=True)
 
-    
     # ORG CONTEXT
-    
+
     organization_id = Column(
         Integer,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+        ForeignKey("hris.organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
 
-    
     # CORE RELATIONS
-    
+
     employees_id = Column(
         Integer,
-        ForeignKey("employees.id", ondelete="CASCADE"),
+        ForeignKey("hris.employees.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
 
     position_id = Column(
         Integer,
-        ForeignKey("employees_position.id"),
+        ForeignKey("hris.employees_position.id"),
         nullable=False,
     )
 
     offices_id = Column(
         Integer,
-        ForeignKey("offices.id"),
+        ForeignKey("hris.offices.id"),
         nullable=False,
     )
 
     manager_employment_id = Column(
         Integer,
-        ForeignKey("employment_models.id", ondelete="SET NULL"),
+        ForeignKey("hris.employment_models.id", ondelete="SET NULL"),
         nullable=True,
         index=True
     )
 
-    
     # RELATIONSHIPS
-    
+
     employee = relationship(
         "Employees",
         back_populates="employment_models",
@@ -71,27 +69,25 @@ class EmploymentModels(Base):
     offices = relationship("Offices", backref="employment_models")
 
     manager = relationship(
-        "EmploymentModel",
+        "EmploymentModels",
         remote_side=[id],
         back_populates="subordinates",
         foreign_keys=[manager_employment_id],
     )
 
     subordinates = relationship(
-        "EmploymentModel",
+        "EmploymentModels",
         back_populates="manager"
     )
 
-    
     # TIMELINE
-    
+
     start_date = Column(DateTime, nullable=False)
 
     end_date = Column(DateTime, nullable=True)
 
-    
     # CLASSIFICATION
-    
+
     status = Column(
         SQLEnum(EmploymentStatus, name="employment_status"),
         default=EmploymentStatus.active,
@@ -104,16 +100,14 @@ class EmploymentModels(Base):
         nullable=True,
     )
 
-    
     # SNAPSHOT (HISTORY SAFETY)
-    
+
     position_snapshot = Column(String, nullable=True)
 
     offices_snapshot = Column(String, nullable=True)
 
-    
     # AUDIT
-    
+
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
     updated_at = Column(

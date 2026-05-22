@@ -4,25 +4,27 @@ from app.db.hris.enums.attendance import *
 class Attendance(Base):
     __tablename__ = "attendance"
 
+    __table_args__ = {"schema": "hris"}
+
     id = Column(Integer, primary_key=True, index=True)
 
     organization_id = Column(
         Integer,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+        ForeignKey("hris.organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
 
     employees_id = Column(
         Integer,
-        ForeignKey("employees.id"),
+        ForeignKey("hris.employees.id"),
         nullable=False,
         index=True
     )
 
     shift_id = Column(
         Integer,
-        ForeignKey("shift.id"),
+        ForeignKey("hris.shift.id"),
         nullable=True,
         index=True
     )

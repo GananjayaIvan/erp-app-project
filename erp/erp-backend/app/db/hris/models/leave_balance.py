@@ -4,6 +4,8 @@ from .library.dependencies import *
 class LeaveBalance(Base):
     __tablename__ = "leave_balance"
 
+    __table_args__ = {"schema": "hris"}
+
     
     # IDENTITY
     
@@ -14,7 +16,7 @@ class LeaveBalance(Base):
     
     organization_id = Column(
         Integer,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+        ForeignKey("hris.organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
@@ -24,14 +26,14 @@ class LeaveBalance(Base):
     
     employment_id = Column(
         Integer,
-        ForeignKey("employment_models.id", ondelete="CASCADE"),
+        ForeignKey("hris.employment_models.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
 
     leave_types_id = Column(
         Integer,
-        ForeignKey("leave_types.id", ondelete="CASCADE"),
+        ForeignKey("hris.leave_types.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )

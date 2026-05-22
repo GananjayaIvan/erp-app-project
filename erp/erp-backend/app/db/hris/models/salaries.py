@@ -4,6 +4,8 @@ from .library.dependencies import *
 class Salaries(Base):
     __tablename__ = "salaries"
 
+    __table_args__ = {"schema": "hris"}
+
     
     # IDENTITY
     
@@ -14,7 +16,7 @@ class Salaries(Base):
     
     organization_id = Column(
         Integer,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+        ForeignKey("hris.organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
@@ -24,7 +26,7 @@ class Salaries(Base):
     
     employment_id = Column(
         Integer,
-        ForeignKey("employment_models.id", ondelete="CASCADE"),
+        ForeignKey("hris.employment_models.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )

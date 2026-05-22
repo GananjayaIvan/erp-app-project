@@ -1,0 +1,62 @@
+services:
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: zitadel
+      POSTGRES_PASSWORD: zitadelpassword
+      POSTGRES_DB: zitadel
+
+    expose:
+      - "5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  zitadel:
+    image: ghcr.io/zitadel/zitadel:v2.64.1
+    container_name: zitadel
+
+    restart: unless-stopped
+
+    depends_on:
+      - postgres
+
+    command: >
+      start-from-init
+      --masterkey "12345678901234567890123456789012"
+      --tlsMode disabled
+
+    environment:
+
+      ZITADEL_EXTERNALDOMAIN: auth.local
+      ZITADEL_EXTERNALSECURE: false
+      ZITADEL_PORT: 8080
+
+      ZITADEL_FIRSTINSTANCE_ORG_HUMAN_USERNAME: admin@zitadel.localhost
+      ZITADEL_FIRSTINSTANCE_ORG_HUMAN_PASSWORD: Password123!
+
+      ZITADEL_DATABASE_POSTGRES_HOST: postgres
+      ZITADEL_DATABASE_POSTGRES_PORT: 5432
+      ZITADEL_DATABASE_POSTGRES_DATABASE: zitadel
+
+      ZITADEL_DATABASE_POSTGRES_ADMIN_USERNAME: zitadel
+      ZITADEL_DATABASE_POSTGRES_ADMIN_PASSWORD: zitadelpassword
+
+      ZITADEL_DATABASE_POSTGRES_USER_USERNAME: zitadel
+      ZITADEL_DATABASE_POSTGRES_USER_PASSWORD: zitadelpassword
+
+      ZITADEL_DATABASE_POSTGRES_ADMIN_SSL_MODE: disable
+      ZITADEL_DATABASE_POSTGRES_USER_SSL_MODE: disable
+
+    ports:
+      - "8080:8080"
+
+
+volumes:
+  postgres_data:

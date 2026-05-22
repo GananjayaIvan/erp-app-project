@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 class Shift(Base):
     __tablename__ = "shift"
 
+    __table_args__ = {"schema": "hris"}
+
 
     # IDENTITY
 
@@ -16,14 +18,14 @@ class Shift(Base):
 
     organization_id = Column(
         Integer,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+        ForeignKey("hris.organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
 
     offices_id = Column(
         Integer,
-        ForeignKey("offices.id", ondelete="CASCADE"),
+        ForeignKey("hris.offices.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )

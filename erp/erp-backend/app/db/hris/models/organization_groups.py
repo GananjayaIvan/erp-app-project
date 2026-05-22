@@ -2,11 +2,10 @@ from .library.dependencies import *
 from enum import Enum
 
 
-from .library.dependencies import *
-
-
 class OrganizationGroup(Base):
     __tablename__ = "organization_groups"
+
+    __table_args__ = {"schema": "hris"}
 
     
     # IDENTITY

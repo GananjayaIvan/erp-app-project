@@ -3,17 +3,22 @@ from .library.dependencies import *
 class EmployeeOrganizations(Base):
     __tablename__ = "employee_organizations"
 
+    __table_args__ = (
+        UniqueConstraint("employee_id", "organization_id", name="uq_employee_org"),
+        {"schema": "hris"}
+    )
+
     id = Column(Integer, primary_key=True)
 
     employee_id = Column(
         Integer,
-        ForeignKey("employees.id", ondelete="CASCADE"),
+        ForeignKey("hris.employees.id", ondelete="CASCADE"),
         nullable=False
     )
 
     organization_id = Column(
         Integer,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+        ForeignKey("hris.organizations.id", ondelete="CASCADE"),
         nullable=False
     )
 
@@ -25,7 +30,3 @@ class EmployeeOrganizations(Base):
     # relationships
     employee = relationship("Employees", back_populates="organizations")
     organization = relationship("Organization", back_populates="members")
-
-    __table_args__ = (
-        UniqueConstraint("employee_id", "organization_id", name="uq_employee_org"),
-    )

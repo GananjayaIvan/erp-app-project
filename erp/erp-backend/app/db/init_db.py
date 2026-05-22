@@ -1,6 +1,6 @@
 from app.db.base import Base
 from app.db.session import engine
-from app.modules.hris.registry import HRIS_MODELS
+from app.db.hris.registry import HRIS_MODELS
 
 
 def init_db():

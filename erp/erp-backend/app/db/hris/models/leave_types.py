@@ -4,6 +4,8 @@ from .library.dependencies import *
 class LeaveTypes(Base):
     __tablename__ = "leave_types"
 
+    __table_args__ = {"schema": "hris"}
+
     
     # IDENTITY
     
@@ -14,7 +16,7 @@ class LeaveTypes(Base):
     
     organization_id = Column(
         Integer,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+        ForeignKey("hris.organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )

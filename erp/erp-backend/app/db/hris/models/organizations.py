@@ -12,6 +12,8 @@ class OrganizationStatus(str, Enum):
 class Organization(Base):
     __tablename__ = "organizations"
 
+    __table_args__ = {"schema": "hris"}
+
     id = Column(Integer, primary_key=True, index=True)
 
     name = Column(String, nullable=False)
@@ -20,7 +22,7 @@ class Organization(Base):
     # SaaS tenant group (mandatory)
     group_id = Column(
         Integer,
-        ForeignKey("organization_groups.id", ondelete="CASCADE"),
+        ForeignKey("hris.organization_groups.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )

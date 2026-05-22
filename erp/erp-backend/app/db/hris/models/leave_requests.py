@@ -4,9 +4,10 @@ from app.db.hris.enums.leave_request_status import *
 class LeaveRequests(Base):
     __tablename__ = "leave_requests"
 
+    __table_args__ = {"schema": "hris"}
+
     
     # IDENTITY
-    
     id = Column(Integer, primary_key=True, index=True)
 
     
@@ -14,7 +15,7 @@ class LeaveRequests(Base):
     
     organization_id = Column(
         Integer,
-        ForeignKey("organizations.id", ondelete="CASCADE"),
+        ForeignKey("hris.organizations.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
@@ -24,14 +25,14 @@ class LeaveRequests(Base):
     
     employment_id = Column(
         Integer,
-        ForeignKey("employment_models.id", ondelete="CASCADE"),
+        ForeignKey("hris.employment_models.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
 
     leave_types_id = Column(
         Integer,
-        ForeignKey("leave_types.id", ondelete="CASCADE"),
+        ForeignKey("hris.leave_types.id", ondelete="CASCADE"),
         nullable=False,
         index=True
     )
@@ -65,7 +66,7 @@ class LeaveRequests(Base):
     
     approved_by_employment_id = Column(
         Integer,
-        ForeignKey("employment_models.id"),
+        ForeignKey("hris.employment_models.id"),
         nullable=True,
         index=True
     )

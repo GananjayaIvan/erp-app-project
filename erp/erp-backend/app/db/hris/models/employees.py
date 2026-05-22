@@ -5,12 +5,18 @@ from app.db.hris.enums.employment_status import EmploymentStatus
 class Employees(Base):
     __tablename__ = "employees"
 
+    __table_args__ = {"schema": "hris"}
     
     # IDENTITY
     
     id = Column(Integer, primary_key=True, index=True)
 
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    employee_number = Column(
+    String,
+    unique=True,
+    index=True,
+    nullable=False
+    )
 
     full_name = Column(String, nullable=False)
 
@@ -21,19 +27,17 @@ class Employees(Base):
         index=True
     )
 
-    joined_at = Column(DateTime, nullable=True)
+    joined_at = Column(DateTime, nullable=True,index=True)
     terminated_at = Column(DateTime, nullable=True)
-
+    deleted_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
 
     
-    # AUTH
-    
-    users = relationship(
-        "users",
-        back_populates="employees",
-        uselist=False,
-        cascade="all, delete-orphan"
+    # AUTH    
+    user = relationship(
+        "User",
+        back_populates="employee",
+        uselist=False
     )
 
     
